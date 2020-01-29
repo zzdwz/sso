@@ -30,6 +30,8 @@ public class LoginInterceptor implements HandlerInterceptor {
             String httpUrl = SSOClientUtil.SERVER_URL_PREFIX + "/verify";
             Map<String, String> params = new HashMap<String, String>();
             params.put("token", token);
+            params.put("logoutUrl", SSOClientUtil.getClientLogoutUrl());
+            params.put("jsessionid", session.getId());
             String result = HttpUtil.sendHttpRequest(httpUrl, params);
             if ("true".equals(result)){
                 session.setAttribute("isLogin", true);

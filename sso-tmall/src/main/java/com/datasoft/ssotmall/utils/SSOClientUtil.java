@@ -32,4 +32,12 @@ public class SSOClientUtil {
         System.out.println("tmall redirectSSOUrl:" + sb.toString());
         response.sendRedirect(sb.toString());
     }
+    public static String getServerLogoutUrl(HttpServletRequest request){
+        return SERVER_URL_PREFIX + "/logout?redirectUrl=" + CLIENT_HOST_URL + request.getServletPath();
+    }
+
+    public static String getClientLogoutUrl(){
+        return CLIENT_HOST_URL + "/logout";
+    }
+
 }

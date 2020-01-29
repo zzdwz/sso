@@ -1,6 +1,7 @@
 package com.datasoft.ssoserver.contorller;
 
 import com.datasoft.ssoserver.db.MemDB;
+import com.datasoft.ssoserver.vo.VoClientInfo;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
@@ -11,6 +12,8 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Controller
@@ -52,11 +55,27 @@ public class LoginController {
 
     @RequestMapping("verify")
     @ResponseBody
-    public String verify(String token){
+    public String verify(String token, String logoutUrl, String jsessionid){
         if (MemDB.T_TOKEN.contains(token)){
+            List<VoClientInfo> clientInfos = MemDB.T_CLIENTINFO.get(token);
+            if (clientInfos == null){
+                clientInfos = new ArrayList<VoClientInfo>();
+                MemDB.T_CLIENTINFO.put(token, clientInfos);
+             }
+            VoClientInfo clientInfo = new VoClientInfo();
+            clientInfo.setLogoutUrl(logoutUrl);
+            clientInfo.setJsessionid(jsessionid);
+            clientInfos.add(clientInfo);
             return "true";
         }else{
             return "false";
         }
+    }
+
+    @RequestMapping("/logout")
+    public String logout(HttpSession session, String redirectUrl, Model model){
+        session.invalidate();
+        model.addAttribute("redirectUrl", redirectUrl);
+        return "index";
     }
 }
